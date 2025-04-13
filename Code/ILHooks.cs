@@ -254,10 +254,10 @@ namespace DamageSourceForEquipment
             {
                 ILCursor c = new(il);
                 // there's 2 FireProjectileblahblahblah lines that are almost the exact same one right after another
-                ReplaceBadFireProjectileLine(il, c, 1);
-                ReplaceBadFireProjectileLine(il, c, 2);
+                ReplaceBadFireProjectileLine(il, c);
+                ReplaceBadFireProjectileLine(il, c);
             }
-            private static void ReplaceBadFireProjectileLine(ILContext il, ILCursor c, int hookPart)
+            private static void ReplaceBadFireProjectileLine(ILContext il, ILCursor c)
             {
                 ILLabel afterBadFireProjectile = il.DefineLabel();
                 VariableDefinition[] requiredMethodParameters = CreateArrayForParametersAsLocalILVariables(il);
@@ -300,6 +300,11 @@ namespace DamageSourceForEquipment
                 {
                     LogILError($"{il.Method.Name} PART {i}", il, c);
                     return;
+                }
+                // itemstatistics adds 4 IL lines for after each prefab ldsfld
+                if (ModSupport.ItemStatisticsMod.ModIsRunning)
+                {
+                    c.Index += 4;
                 }
                 c.Emit(OpCodes.Stloc, requiredMethodParameters[i - 1]);
                 i++;

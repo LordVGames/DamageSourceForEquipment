@@ -1,6 +1,6 @@
 ﻿{
 	"name": "DamageSourceForEquipment",
-	"version_number": "1.0.0",
+	"version_number": "1.0.1",
 	"website_url": "https://github.com/LordVGames/DamageSourceForEquipment",
 	"description": "Implements the equipment DamageSource that Gearbox added but forgot to implement. Does nothing on it's own",
 	"dependencies": [
