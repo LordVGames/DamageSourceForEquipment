@@ -65,10 +65,13 @@ namespace DamageSourceForEquipment
 
             private static void MissileUtils_FireMissle(ILContext il)
             {
+                // "Use of unassigned local variable" ahhhh shaddap
+                int ldLocNumber = 0;
+
                 ILCursor c = new(il);
                 if (!c.TryGotoNext(MoveType.Before,
                     x => x.MatchCall<ProjectileManager>("get_instance"),
-                    x => x.MatchLdloc(4),
+                    x => x.MatchLdloc(out ldLocNumber),
                     x => x.MatchCallvirt<ProjectileManager>("FireProjectile")
                 ))
                 {
@@ -76,7 +79,7 @@ namespace DamageSourceForEquipment
                     return;
                 }
 
-                c.Emit(OpCodes.Ldloc, 4);
+                c.Emit(OpCodes.Ldloc, ldLocNumber);
                 c.EmitDelegate<Func<FireProjectileInfo, FireProjectileInfo>>((fireProjectileInfo) =>
                 {
                     if (!fireProjectileInfo.procChainMask.HasModdedProc(Main.AddEquipmentDamageSource))

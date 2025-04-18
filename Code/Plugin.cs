@@ -11,7 +11,7 @@ namespace DamageSourceForEquipment
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "LordVGames";
         public const string PluginName = "DamageSourceForEquipment";
-        public const string PluginVersion = "1.0.1";
+        public const string PluginVersion = "1.0.2";
         public void Awake()
         {
             Log.Init(Logger);
