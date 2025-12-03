@@ -1,13 +1,12 @@
 ﻿{
 	"name": "DamageSourceForEquipment",
-	"version_number": "1.0.2",
+	"version_number": "2.0.0",
 	"website_url": "https://github.com/LordVGames/DamageSourceForEquipment",
-	"description": "Implements the equipment DamageSource that Gearbox added but forgot to implement. Does nothing on it's own",
+	"description": "Implements the equipment DamageSource that Gearbox added but didn't implement. Does nothing on it's own.",
 	"dependencies": [
-		"bbepis-BepInExPack-5.4.2117",
-		"RiskofThunder-HookGenPatcher-1.2.5",
-		"RiskofThunder-RoR2BepInExPack-1.26.0",
-		"RiskofThunder-R2API_Core-5.1.5",
+		"bbepis-BepInExPack-5.4.2121",
+		"MonoDetour-MonoDetour_BepInEx_5-0.7.5",
+		"RiskofThunder-R2API_Core-5.2.0",
 		"RiskofThunder-R2API_ProcType-1.0.2"
 	]
 }
