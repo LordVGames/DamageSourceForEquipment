@@ -6,7 +6,7 @@ using MiscFixes.Modules;
 
 namespace DamageSourceForEquipment
 {
-    public static class ConfigOptions
+    internal static class ConfigOptions
     {
         public static ConfigEntry<bool> AspectDamageIsEquipment;
 

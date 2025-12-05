@@ -23,8 +23,8 @@ internal static class NormalEquipments
         [MonoDetourHookInitialize]
         private static void Setup()
         {
-            MonoDetourHooks.RoR2.EquipmentSlot.FireMissile.ILHook(EquipmentSlot_FireMissile);
-            MonoDetourHooks.RoR2.MissileUtils.FireMissile_UnityEngine_Vector3_RoR2_CharacterBody_RoR2_ProcChainMask_UnityEngine_GameObject_System_Single_System_Boolean_UnityEngine_GameObject_RoR2_DamageColorIndex_UnityEngine_Vector3_System_Single_System_Boolean.ILHook(MissileUtils_FireMissile);
+            Mdh.RoR2.EquipmentSlot.FireMissile.ILHook(EquipmentSlot_FireMissile);
+            Mdh.RoR2.MissileUtils.FireMissile_UnityEngine_Vector3_RoR2_CharacterBody_RoR2_ProcChainMask_UnityEngine_GameObject_System_Single_System_Boolean_UnityEngine_GameObject_RoR2_DamageColorIndex_UnityEngine_Vector3_System_Single_System_Boolean.ILHook(MissileUtils_FireMissile);
         }
 
         private static void EquipmentSlot_FireMissile(ILManipulationInfo info)
@@ -44,7 +44,6 @@ internal static class NormalEquipments
                 w.CreateDelegateCall((ProcChainMask procChainMask) =>
                 {
                     procChainMask.AddModdedProc(Main.AddEquipmentDamageSource);
-                    Log.Warning(procChainMask);
                     return procChainMask;
                 })
             );
@@ -64,7 +63,6 @@ internal static class NormalEquipments
             w.InsertAfterCurrent(
                 w.CreateDelegateCall((FireProjectileInfo fireProjectileInfo) =>
                 {
-                    Log.Warning(fireProjectileInfo.projectilePrefab);
                     if (!fireProjectileInfo.procChainMask.HasModdedProc(Main.AddEquipmentDamageSource))
                     {
                         return fireProjectileInfo;
@@ -86,7 +84,7 @@ internal static class NormalEquipments
         [MonoDetourHookInitialize]
         private static void Setup()
         {
-            MonoDetourHooks.EntityStates.QuestVolatileBattery.CountDown.Detonate.ILHook(CountDown_Detonate);
+            Mdh.EntityStates.QuestVolatileBattery.CountDown.Detonate.ILHook(CountDown_Detonate);
         }
 
         private static void CountDown_Detonate(ILManipulationInfo info)
@@ -106,7 +104,7 @@ internal static class NormalEquipments
         [MonoDetourHookInitialize]
         private static void Setup()
         {
-            MonoDetourHooks.RoR2.EquipmentSlot.FireMolotov.ILHook(EquipmentSlot_FireMolotov);
+            Mdh.RoR2.EquipmentSlot.FireMolotov.ILHook(EquipmentSlot_FireMolotov);
 
 
             AssetAsyncReferenceManager<GameObject>.LoadAsset(_molotovProjectile).Completed += (handle) =>
@@ -137,7 +135,7 @@ internal static class NormalEquipments
         [MonoDetourHookInitialize]
         private static void Setup()
         {
-            MonoDetourHooks.RoR2.EquipmentSlot.MyFixedUpdate.ILHook(EquipmentSlot_MyFixedUpdate);
+            Mdh.RoR2.EquipmentSlot.MyFixedUpdate.ILHook(EquipmentSlot_MyFixedUpdate);
 
 
             AssetAsyncReferenceManager<GameObject>.LoadAsset(_preonProjectile).Completed += (handle) =>
@@ -161,7 +159,7 @@ internal static class NormalEquipments
         [MonoDetourHookInitialize]
         private static void Setup()
         {
-            MonoDetourHooks.RoR2.EquipmentSlot.FireVendingMachine.ILHook(EquipmentSlot_FireVendingMachine);
+            Mdh.RoR2.EquipmentSlot.FireVendingMachine.ILHook(EquipmentSlot_FireVendingMachine);
         }
 
         private static void EquipmentSlot_FireVendingMachine(ILManipulationInfo info)
@@ -178,7 +176,7 @@ internal static class NormalEquipments
         [MonoDetourHookInitialize]
         private static void Setup()
         {
-            MonoDetourHooks.RoR2.Orbs.LightningStrikeOrb.OnArrival.ILHook(LightningStrikeOrb_OnArrival);
+            Mdh.RoR2.Orbs.LightningStrikeOrb.OnArrival.ILHook(LightningStrikeOrb_OnArrival);
         }
 
         private static void LightningStrikeOrb_OnArrival(ILManipulationInfo info)
@@ -195,7 +193,7 @@ internal static class NormalEquipments
         [MonoDetourHookInitialize]
         private static void Setup()
         {
-            MonoDetourHooks.EntityStates.GoldGat.GoldGatFire.FireBullet.ILHook(GoldGatFire_FireBullet);
+            Mdh.EntityStates.GoldGat.GoldGatFire.FireBullet.ILHook(GoldGatFire_FireBullet);
         }
 
         private static void GoldGatFire_FireBullet(ILManipulationInfo info)
@@ -212,8 +210,8 @@ internal static class NormalEquipments
         [MonoDetourHookInitialize]
         private static void Setup()
         {
-            MonoDetourHooks.RoR2.FireballVehicle.OnPassengerEnter.ILHook(FireballVehicle_OnPassengerEnter);
-            MonoDetourHooks.RoR2.FireballVehicle.DetonateServer.ILHook(FireballVehicle_DetonateServer);
+            Mdh.RoR2.FireballVehicle.OnPassengerEnter.ILHook(FireballVehicle_OnPassengerEnter);
+            Mdh.RoR2.FireballVehicle.DetonateServer.ILHook(FireballVehicle_DetonateServer);
         }
 
         private static void FireballVehicle_OnPassengerEnter(ILManipulationInfo info)
@@ -235,7 +233,7 @@ internal static class NormalEquipments
         [MonoDetourHookInitialize]
         private static void Setup()
         {
-            MonoDetourHooks.RoR2.EquipmentSlot._FireSaw_g__FireSingleSaw_96_0.ILHook(EquipmentSlot__FireSaw_g__FireSingleSaw_96_0);
+            Mdh.RoR2.EquipmentSlot._FireSaw_g__FireSingleSaw_96_0.ILHook(EquipmentSlot__FireSaw_g__FireSingleSaw_96_0);
         }
 
         private static void EquipmentSlot__FireSaw_g__FireSingleSaw_96_0(ILManipulationInfo info)

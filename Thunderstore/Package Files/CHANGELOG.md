@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Updated for MonoDetour 0.7.6
+
 ## 2.0.0
 
 - Fixed for AC release

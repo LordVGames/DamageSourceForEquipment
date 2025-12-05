@@ -10,7 +10,13 @@
 		<RestoreAdditionalProjectSources>
 			https://nuget.windows10ce.com/nuget/v3/index.json
 		</RestoreAdditionalProjectSources>
-		<MonoDetourHookGenNamespace>MonoDetourHooks</MonoDetourHookGenNamespace>
+		<MonoDetourHookGenNamespace>Mdh</MonoDetourHookGenNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<AssemblyName>LordVGames.DamageSourceForEquipment</AssemblyName>
+		<AssemblyTitle>DamageSourceForEquipment</AssemblyTitle>
+		<Version>2.0.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -21,9 +27,14 @@
 
 		<PackageReference Include="BepInEx.Core" Version="5.4.21" />
 
-		<PackageReference Include="MonoDetour" Version="0.7.5" />
+		<PackageReference Include="Hamunii.BepInEx.AutoPlugin" Version="2.1.0">
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+		</PackageReference>
 
-		<PackageReference Include="MonoDetour.HookGen" Version="0.7.3" />
+		<PackageReference Include="MonoDetour" Version="0.7.6" />
+
+		<PackageReference Include="MonoDetour.HookGen" Version="0.7.6" />
 
 		<PackageReference Include="R2API.ProcType" Version="1.0.2" />
 

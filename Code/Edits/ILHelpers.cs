@@ -12,7 +12,7 @@ using System.Text;
 using MonoDetour.Cil.Analysis;
 namespace DamageSourceForEquipment.Edits;
 
-public static class ILHelpers
+internal static class ILHelpers
 {
     internal static void LogILInstructions(this ILWeaver w)
     {

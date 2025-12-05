@@ -5,13 +5,9 @@ using MonoDetour;
 using MonoDetour.HookGen;
 namespace DamageSourceForEquipment;
 
-[BepInPlugin(PluginGUID, PluginName, PluginVersion)]
-public class Plugin : BaseUnityPlugin
+[BepInAutoPlugin]
+public partial class Plugin : BaseUnityPlugin
 {
-    public const string PluginGUID = PluginAuthor + "." + PluginName;
-    public const string PluginAuthor = "LordVGames";
-    public const string PluginName = "DamageSourceForEquipment";
-    public const string PluginVersion = "2.0.0";
     public void Awake()
     {
         Log.Init(Logger);
@@ -27,7 +23,7 @@ public class Plugin : BaseUnityPlugin
         [MonoDetourHookInitialize]
         internal static void Setup()
         {
-            MonoDetourHooks.RoR2.CharacterMaster.OnBodyDamaged.Postfix(LogDamageSource);
+            Mdh.RoR2.CharacterMaster.OnBodyDamaged.Postfix(LogDamageSource);
         }
 
         private static void LogDamageSource(CharacterMaster self, ref DamageReport damageReport)

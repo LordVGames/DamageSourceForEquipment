@@ -11,7 +11,7 @@ using RoR2BepInExPack.Utilities;
 
 namespace DamageSourceForEquipment
 {
-    public static class Main
+    internal static class Main
     {
         public static ModdedProcType AddEquipmentDamageSource;
 

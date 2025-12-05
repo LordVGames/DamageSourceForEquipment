@@ -16,7 +16,7 @@ namespace DamageSourceForEquipment.Edits;
 
 public static class EliteAspects
 {
-    [MonoDetourTargets(typeof(AffixAurelioniteBehavior), Members = ["FireAurelioniteAttack"])]
+    [MonoDetourTargets(typeof(AffixAurelioniteBehavior))]
     private static class GildedAspect
     {
         [MonoDetourHookInitialize]
@@ -28,7 +28,7 @@ public static class EliteAspects
             }
             
 
-            MonoDetourHooks.RoR2.AffixAurelioniteBehavior.FireAurelioniteAttack.ILHook(AffixAurelioniteBehavior_FireAurelioniteAttack);
+            Mdh.RoR2.AffixAurelioniteBehavior.FireAurelioniteAttack.ILHook(AffixAurelioniteBehavior_FireAurelioniteAttack);
         }
 
         private static void AffixAurelioniteBehavior_FireAurelioniteAttack(ILManipulationInfo info)
@@ -43,7 +43,7 @@ public static class EliteAspects
 
 
     [MonoDetourTargets(typeof(DamageTrail))]
-    [MonoDetourTargets(typeof(CharacterBody), Members = ["UpdateFireTrail"])]
+    [MonoDetourTargets(typeof(CharacterBody))]
     private static class BlazingAspect
     {
         // didn't want to set the DamageSource for DamageTrails directly in case some mod adds a DamageTrail not tied to an equipment
@@ -64,10 +64,10 @@ public static class EliteAspects
             }
 
 
-            MonoDetourHooks.RoR2.DamageTrail.Awake.Postfix(DamageTrail_Awake);
-            MonoDetourHooks.RoR2.DamageTrail.OnDisable.Postfix(DamageTrail_OnDisable);
-            MonoDetourHooks.RoR2.DamageTrail.DoDamage.ILHook(DamageTrail_DoDamage);
-            MonoDetourHooks.RoR2.CharacterBody.UpdateFireTrail.ILHook(CharacterBody_UpdateFireTrail);
+            Mdh.RoR2.DamageTrail.Awake.Postfix(DamageTrail_Awake);
+            Mdh.RoR2.DamageTrail.OnDisable.Postfix(DamageTrail_OnDisable);
+            Mdh.RoR2.DamageTrail.DoDamage.ILHook(DamageTrail_DoDamage);
+            Mdh.RoR2.CharacterBody.UpdateFireTrail.ILHook(CharacterBody_UpdateFireTrail);
         }
 
         private static void DamageTrail_Awake(DamageTrail self)
@@ -92,9 +92,7 @@ public static class EliteAspects
             ).ThrowIfFailure();
             w.InsertAfterCurrent(
                 w.Create(OpCodes.Ldarg_0),
-                w.Create(OpCodes.Ldloc_3)
-            );
-            w.InsertAfterCurrent(
+                w.Create(OpCodes.Ldloc_3),
                 w.CreateDelegateCall((DamageTrail damageTrail, DamageInfo damageInfo) =>
                 {
                     if (DamageTrailDamageSourceTable.TryGetValue(damageTrail, out var damageTrailDamageSource))
@@ -113,9 +111,7 @@ public static class EliteAspects
                 x => x.MatchStfld<CharacterBody>("fireTrail") && w.SetCurrentTo(x)
             ).ThrowIfFailure();
             w.InsertAfterCurrent(
-                w.Create(OpCodes.Ldarg_0)
-            );
-            w.InsertAfterCurrent(
+                w.Create(OpCodes.Ldarg_0),
                 w.CreateDelegateCall((CharacterBody characterBody) =>
                 {
                     // didn't have to null check here before but now i do
@@ -131,7 +127,7 @@ public static class EliteAspects
 
 
 
-    [MonoDetourTargets(typeof(CharacterBody), Members = ["UpdateAffixPoison"])]
+    [MonoDetourTargets(typeof(CharacterBody))]
     private static class MalachiteAspect
     {
         private static readonly AssetReferenceT<GameObject> _malachiteSpikeProjectile = new(RoR2BepInExPack.GameAssetPaths.Version_1_35_0.RoR2_Base_ElitePoison.PoisonStakeProjectile_prefab);
@@ -145,7 +141,7 @@ public static class EliteAspects
             }
 
 
-            MonoDetourHooks.RoR2.CharacterBody.UpdateAffixPoison.ILHook(CharacterBody_UpdateAffixPoison);
+            Mdh.RoR2.CharacterBody.UpdateAffixPoison.ILHook(CharacterBody_UpdateAffixPoison);
 
 
             AssetAsyncReferenceManager<GameObject>.LoadAsset(_malachiteSpikeProjectile).Completed += (handle) =>
@@ -163,7 +159,7 @@ public static class EliteAspects
 
 
 
-    [MonoDetourTargets(typeof(GlobalEventManager), Members = ["OnCharacterDeath"])]
+    [MonoDetourTargets(typeof(GlobalEventManager))]
     private static class GlacialAspect
     {
         [MonoDetourHookInitialize]
@@ -175,7 +171,7 @@ public static class EliteAspects
             }
 
 
-            MonoDetourHooks.RoR2.GlobalEventManager.OnCharacterDeath.ILHook(GlobalEventManager_OnCharacterDeath);
+            Mdh.RoR2.GlobalEventManager.OnCharacterDeath.ILHook(GlobalEventManager_OnCharacterDeath);
         }
 
         private static void GlobalEventManager_OnCharacterDeath(ILManipulationInfo info)
@@ -191,9 +187,7 @@ public static class EliteAspects
             ).ThrowIfFailure();
 
             w.InsertAfterCurrent(
-                w.Create(OpCodes.Ldloc, ldLocNumber)
-            );
-            w.InsertAfterCurrent(
+                w.Create(OpCodes.Ldloc, ldLocNumber),
                 w.CreateDelegateCall((DelayBlast delayBlast) =>
                 {
                     delayBlast.damageType.damageSource = DamageSource.Equipment;
@@ -205,7 +199,7 @@ public static class EliteAspects
 
 
     // this is copied from above so monodetour will run the Setup here automatically, there's no hooking going on for this one
-    [MonoDetourTargets(typeof(GlobalEventManager), Members = ["OnCharacterDeath"])]
+    [MonoDetourTargets(typeof(GlobalEventManager))]
     private static class TwistedAspect
     {
         private static readonly AssetReferenceT<GameObject> _twistedProjectile = new(RoR2BepInExPack.GameAssetPaths.Version_1_35_0.RoR2_DLC2_Elites_EliteBead.BeadProjectileTrackingBomb_prefab);
@@ -229,7 +223,7 @@ public static class EliteAspects
 
 
 
-    [MonoDetourTargets(typeof(GlobalEventManager), Members = ["OnHitAllProcess"])]
+    [MonoDetourTargets(typeof(GlobalEventManager))]
     private static class OverloadingAspect
     {
         [MonoDetourHookInitialize]
@@ -241,7 +235,7 @@ public static class EliteAspects
             }
 
 
-            MonoDetourHooks.RoR2.GlobalEventManager.OnHitAllProcess.ILHook(GlobalEventManager_OnHitAllProcess);
+            Mdh.RoR2.GlobalEventManager.OnHitAllProcess.ILHook(GlobalEventManager_OnHitAllProcess);
         }
 
         private static void GlobalEventManager_OnHitAllProcess(ILManipulationInfo info)
