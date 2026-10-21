@@ -1,3 +1,3 @@
 # DamageSourceForEquipment
 
-When the SOTS phase 2 update dropped, Gearbox added another damage source option: Equipment. This could let items/character abilities do things depending on damage from specifically equipments, but Gearbox never actually implemented the damage source, rendering it practically useless. This mod actually implements it for all equipment that can do damage, including elite aspects (configurable).
+When the SOTS phase 2 update dropped, Gearbox added an Equipment damage source. This can let items/character abilities do things depending on damage from specifically equipments, but Gearbox hasn't actually implemented the damage source for damage-dealing equipments, rendering it practically useless. This mod actually implements it for those equipment, including elite aspects (configurable).

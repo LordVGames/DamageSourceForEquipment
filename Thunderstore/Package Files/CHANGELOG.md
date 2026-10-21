@@ -1,3 +1,7 @@
+## 2.0.2
+
+- Fixed for DLC4
+
 ## 2.0.1
 
 - Updated for MonoDetour 0.7.6

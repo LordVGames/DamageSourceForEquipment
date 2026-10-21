@@ -5,6 +5,7 @@ using MonoDetour;
 using MonoDetour.HookGen;
 namespace DamageSourceForEquipment;
 
+
 [BepInAutoPlugin]
 public partial class Plugin : BaseUnityPlugin
 {

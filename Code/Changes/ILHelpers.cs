@@ -10,7 +10,8 @@ using MonoMod.Cil;
 using RoR2.Projectile;
 using System.Text;
 using MonoDetour.Cil.Analysis;
-namespace DamageSourceForEquipment.Edits;
+namespace DamageSourceForEquipment.Changes;
+
 
 internal static class ILHelpers
 {
@@ -90,8 +91,8 @@ internal static class ILHelpers
             w.MatchRelaxed(
                 x => x.MatchNewobj<DamageInfo>(),
                 x => x.MatchDup() && w.SetCurrentTo(x)
-            ).ThrowIfFailure();
-            w.InsertAfterCurrent(
+            ).ThrowIfFailure()
+            .InsertAfterCurrent(
                 w.CreateDelegateCall((DamageInfo damageInfo) =>
                 {
                     damageInfo.damageType.damageSource = damageSource;
@@ -120,8 +121,8 @@ internal static class ILHelpers
             w.MatchNextRelaxed(
                 x => x.MatchNewobj<DamageInfo>(),
                 x => x.MatchDup() && w.SetCurrentTo(x)
-            ).ThrowIfFailure();
-            w.InsertAfterCurrent(
+            ).ThrowIfFailure()
+            .InsertAfterCurrent(
                 w.CreateDelegateCall((DamageInfo damageInfo) =>
                 {
                     damageInfo.damageType.damageSource = damageSource;
@@ -138,11 +139,36 @@ internal static class ILHelpers
         internal static void AddDamageTypeComboToFireProjectileInfo(DamageTypeCombo damageTypeCombo, ILManipulationInfo info)
         {
             ILWeaver w = new(info);
-
             w.MatchRelaxed(
                 x => x.MatchCallOrCallvirt<ProjectileManager>("FireProjectile") && w.SetCurrentTo(x)
-            ).ThrowIfFailure();
-            w.InsertBeforeCurrent(
+            ).ThrowIfFailure()
+            .InsertBeforeCurrent(
+                w.CreateDelegateCall((FireProjectileInfo fireProjectileInfo) =>
+                {
+                    if (!fireProjectileInfo.damageTypeOverride.HasValue)
+                    {
+                        fireProjectileInfo.damageTypeOverride = new DamageTypeCombo?(damageTypeCombo);
+                    }
+                    else
+                    {
+                        // why do i gotta do it like this, this is dumb
+                        DamageTypeCombo tempDamageTypeOverrideValue = fireProjectileInfo.damageTypeOverride.Value;
+                        tempDamageTypeOverrideValue.damageSource = damageTypeCombo.damageSource;
+                        fireProjectileInfo.damageTypeOverride = tempDamageTypeOverrideValue;
+                    }
+
+                    return fireProjectileInfo;
+                })
+            );
+        }
+
+
+        internal static void AddDamageTypeComboToNextFireProjectileInfo(DamageTypeCombo damageTypeCombo, ILWeaver w)
+        {
+            w.MatchNextRelaxed(
+                x => x.MatchCallOrCallvirt<ProjectileManager>("FireProjectile") && w.SetCurrentTo(x)
+            ).ThrowIfFailure()
+            .InsertBeforeCurrent(
                 w.CreateDelegateCall((FireProjectileInfo fireProjectileInfo) =>
                 {
                     if (!fireProjectileInfo.damageTypeOverride.HasValue)
@@ -169,8 +195,8 @@ internal static class ILHelpers
 
             w.MatchRelaxed(
                 x => x.MatchCallOrCallvirt<ProjectileManager>("FireProjectileWithoutDamageType") && w.SetCurrentTo(x)
-            ).ThrowIfFailure();
-            w.InsertBeforeCurrent(
+            ).ThrowIfFailure()
+            .InsertBeforeCurrent(
                 w.CreateDelegateCall(() =>
                 {
                     return new DamageTypeCombo?(damageTypeCombo);
@@ -184,22 +210,23 @@ internal static class ILHelpers
         }
 
 
-        internal static void OverrideNextFireProjectileWithoutDamageType(DamageTypeCombo damageTypeCombo, ILWeaver w)
+        internal static void OverrideAllFireProjectileWithoutDamageType(DamageTypeCombo damageTypeCombo, ILWeaver w)
         {
-            w.MatchNextRelaxed(
+            w.MatchMultipleRelaxed(
+                onMatch: w2 =>
+                {
+                    w2.InsertBeforeCurrent(
+                        w2.CreateDelegateCall(() =>
+                        {
+                            return new DamageTypeCombo?(damageTypeCombo);
+                        })
+                    )
+                    .ReplaceCurrent(
+                        w2.Create<ProjectileManager>(OpCodes.Callvirt, "FireProjectile")
+                    );
+                },
                 x => x.MatchCallvirt<ProjectileManager>("FireProjectileWithoutDamageType") && w.SetCurrentTo(x)
             ).ThrowIfFailure();
-            w.InsertBeforeCurrent(
-                w.CreateDelegateCall(() =>
-                {
-                    return new DamageTypeCombo?(damageTypeCombo);
-                })
-            );
-            w.ReplaceCurrent(
-                w.Create<ProjectileManager>(OpCodes.Callvirt, "FireProjectile")
-            );
-
-            //w.LogILInstructions();
         }
 
 
@@ -207,11 +234,10 @@ internal static class ILHelpers
         internal static void ReplaceNullDamageSourceInFireProjectile(DamageSource damageSource, ILManipulationInfo info)
         {
             ILWeaver w = new(info);
-
             w.MatchRelaxed(
                 x => x.MatchCallOrCallvirt<ProjectileManager>("FireProjectile") && w.SetCurrentTo(x)
-            ).ThrowIfFailure();
-            w.InsertBeforeCurrent(
+            ).ThrowIfFailure()
+            .InsertBeforeCurrent(
                 w.CreateDelegateCall((DamageTypeCombo damageTypeCombo) =>
                 {
                     damageTypeCombo.damageSource = damageSource;
@@ -280,12 +306,11 @@ internal static class ILHelpers
         internal static void AddDamageSourceToOverlapAttack(DamageSource damageSource, ILManipulationInfo info)
         {
             ILWeaver w = new(info);
-
             w.MatchRelaxed(
                 x => x.MatchNewobj<OverlapAttack>() && w.SetCurrentTo(x)
-            ).ThrowIfFailure();
-            w.CurrentToNext();
-            w.InsertBeforeCurrent(
+            ).ThrowIfFailure()
+            .CurrentToNext()
+            .InsertBeforeCurrent(
                 w.CreateDelegateCall((OverlapAttack overlapAttack) =>
                 {
                     overlapAttack?.damageType.damageSource = damageSource;
@@ -297,11 +322,10 @@ internal static class ILHelpers
         internal static void OverrideDamageTypeCombo(DamageSource damageSource, ILManipulationInfo info)
         {
             ILWeaver w = new(info);
-
             w.MatchNextRelaxed(
                 x => x.MatchStfld<OverlapAttack>("damageType") && w.SetCurrentTo(x)
-            ).ThrowIfFailure();
-            w.InsertBeforeCurrent(
+            ).ThrowIfFailure()
+            .InsertBeforeCurrent(
                 w.CreateDelegateCall((DamageTypeCombo damageTypeCombo) =>
                 {
                     damageTypeCombo.damageSource = damageSource;
@@ -314,8 +338,8 @@ internal static class ILHelpers
         {
             w.MatchNextRelaxed(
                 x => x.MatchStfld<OverlapAttack>("damageType") && w.SetCurrentTo(x)
-            ).ThrowIfFailure();
-            w.InsertBeforeCurrent(
+            ).ThrowIfFailure()
+            .InsertBeforeCurrent(
                 w.CreateDelegateCall((DamageTypeCombo damageTypeCombo) =>
                 {
                     damageTypeCombo.damageSource = damageSource;
@@ -332,12 +356,10 @@ internal static class ILHelpers
         internal static void OverrideBulletAttackDamageSource(DamageSource damageSource, ILManipulationInfo info)
         {
             ILWeaver w = new(info);
-
             w.MatchRelaxed(
                 x => x.MatchCallOrCallvirt<BulletAttack>("Fire") && w.SetCurrentTo(x)
-            ).ThrowIfFailure();
-
-            w.InsertBeforeCurrent(
+            ).ThrowIfFailure()
+            .InsertBeforeCurrent(
                 w.CreateDelegateCall((BulletAttack bulletAttack) =>
                 {
                     bulletAttack?.damageType.damageSource = damageSource;
@@ -350,9 +372,8 @@ internal static class ILHelpers
         {
             w.MatchNextRelaxed(
                 x => x.MatchCallOrCallvirt<BulletAttack>("Fire") && w.SetCurrentTo(x)
-            ).ThrowIfFailure();
-
-            w.InsertBeforeCurrent(
+            ).ThrowIfFailure()
+            .InsertBeforeCurrent(
                 w.CreateDelegateCall((BulletAttack bulletAttack) =>
                 {
                     bulletAttack?.damageType.damageSource = damageSource;

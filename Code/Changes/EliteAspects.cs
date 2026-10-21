@@ -12,7 +12,8 @@ using R2API;
 using RoR2.Projectile;
 using RoR2BepInExPack.Utilities;
 using RoR2.ContentManagement;
-namespace DamageSourceForEquipment.Edits;
+namespace DamageSourceForEquipment.Changes;
+
 
 public static class EliteAspects
 {
@@ -34,9 +35,7 @@ public static class EliteAspects
         private static void AffixAurelioniteBehavior_FireAurelioniteAttack(ILManipulationInfo info)
         {
             ILWeaver w = new(info);
-            
-            ILHelpers.Projectiles.OverrideNextFireProjectileWithoutDamageType(Main.GenericEquipment, w);
-            ILHelpers.Projectiles.OverrideNextFireProjectileWithoutDamageType(Main.GenericEquipment, w);
+            ILHelpers.Projectiles.OverrideAllFireProjectileWithoutDamageType(Main.GenericEquipment, w);
         }
     }
 
@@ -106,22 +105,24 @@ public static class EliteAspects
         private static void CharacterBody_UpdateFireTrail(ILManipulationInfo info)
         {
             ILWeaver w = new(info);
-
-            w.MatchNextRelaxed(
+            w.MatchMultipleRelaxed(
+                onMatch: w2 =>
+                {
+                    w.InsertAfterCurrent(
+                        w.Create(OpCodes.Ldarg_0),
+                        w.CreateDelegateCall((CharacterBody characterBody) =>
+                        {
+                            // didn't have to null check here before but now i do
+                            // probably should've been null checking characterbody already lol
+                            if (characterBody != null && characterBody.fireTrail != null && DamageTrailDamageSourceTable.TryGetValue(characterBody.fireTrail, out var damageTrailDamageSource))
+                            {
+                                damageTrailDamageSource.DamageSource = DamageSource.Equipment;
+                            }
+                        })
+                    );
+                },
                 x => x.MatchStfld<CharacterBody>("fireTrail") && w.SetCurrentTo(x)
             ).ThrowIfFailure();
-            w.InsertAfterCurrent(
-                w.Create(OpCodes.Ldarg_0),
-                w.CreateDelegateCall((CharacterBody characterBody) =>
-                {
-                    // didn't have to null check here before but now i do
-                    // probably should've been null checking characterbody already lol
-                    if (characterBody != null && characterBody.fireTrail != null &&  DamageTrailDamageSourceTable.TryGetValue(characterBody.fireTrail, out var damageTrailDamageSource))
-                    {
-                        damageTrailDamageSource.DamageSource = DamageSource.Equipment;
-                    }
-                })
-            );
         }
     }
 
@@ -130,7 +131,7 @@ public static class EliteAspects
     [MonoDetourTargets(typeof(CharacterBody))]
     private static class MalachiteAspect
     {
-        private static readonly AssetReferenceT<GameObject> _malachiteSpikeProjectile = new(RoR2BepInExPack.GameAssetPaths.Version_1_35_0.RoR2_Base_ElitePoison.PoisonStakeProjectile_prefab);
+        private static readonly AssetReferenceT<GameObject> _malachiteSpikeProjectile = new(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_ElitePoison.PoisonStakeProjectile_prefab);
 
         [MonoDetourHookInitialize]
         private static void Setup()
@@ -184,9 +185,8 @@ public static class EliteAspects
                 x => x.MatchLdcI4(out _),
                 x => x.MatchCall<DamageTypeCombo>("op_Implicit"),
                 x => x.MatchStfld<DelayBlast>("damageType") && w.SetCurrentTo(x)
-            ).ThrowIfFailure();
-
-            w.InsertAfterCurrent(
+            ).ThrowIfFailure()
+            .InsertAfterCurrent(
                 w.Create(OpCodes.Ldloc, ldLocNumber),
                 w.CreateDelegateCall((DelayBlast delayBlast) =>
                 {
@@ -202,7 +202,7 @@ public static class EliteAspects
     [MonoDetourTargets(typeof(GlobalEventManager))]
     private static class TwistedAspect
     {
-        private static readonly AssetReferenceT<GameObject> _twistedProjectile = new(RoR2BepInExPack.GameAssetPaths.Version_1_35_0.RoR2_DLC2_Elites_EliteBead.BeadProjectileTrackingBomb_prefab);
+        private static readonly AssetReferenceT<GameObject> _twistedProjectile = new(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC2_Elites_EliteBead.BeadProjectileTrackingBomb_prefab);
 
         [MonoDetourHookInitialize]
         private static void Setup()
@@ -243,11 +243,11 @@ public static class EliteAspects
             ILWeaver w = new(info);
 
             // move to close to the needed FireProjectileWithoutDamageType
-            w.MatchNextRelaxed(
+            w.MatchRelaxed(
                 x => x.MatchLdsfld("RoR2.RoR2Content/Buffs", "AffixBlue") && w.SetCurrentTo(x)
             ).ThrowIfFailure();
             
-            ILHelpers.Projectiles.OverrideNextFireProjectileWithoutDamageType(Main.GenericEquipment, w);
+            ILHelpers.Projectiles.AddDamageTypeComboToNextFireProjectileInfo(Main.GenericEquipment, w);
         }
     }
 }

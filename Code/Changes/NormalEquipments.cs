@@ -11,8 +11,8 @@ using R2API;
 using RoR2.Projectile;
 using UnityEngine.AddressableAssets;
 using RoR2.ContentManagement;
+namespace DamageSourceForEquipment.Changes;
 
-namespace DamageSourceForEquipment.Edits;
 
 internal static class NormalEquipments
 {
@@ -98,8 +98,8 @@ internal static class NormalEquipments
     [MonoDetourTargets(typeof(EquipmentSlot))]
     private static class Molotov
     {
-        private static readonly AssetReferenceT<GameObject> _molotovProjectile = new(RoR2BepInExPack.GameAssetPaths.Version_1_35_0.RoR2_DLC1_Molotov.MolotovSingleProjectile_prefab);
-        private static readonly AssetReferenceT<GameObject> _molotovGroundDamageZone = new(RoR2BepInExPack.GameAssetPaths.Version_1_35_0.RoR2_DLC1_Molotov.MolotovProjectileDotZone_prefab);
+        private static readonly AssetReferenceT<GameObject> _molotovProjectile = new(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_Molotov.MolotovSingleProjectile_prefab);
+        private static readonly AssetReferenceT<GameObject> _molotovGroundDamageZone = new(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_Molotov.MolotovProjectileDotZone_prefab);
 
         [MonoDetourHookInitialize]
         private static void Setup()
@@ -130,7 +130,7 @@ internal static class NormalEquipments
     [MonoDetourTargets(typeof(EquipmentSlot))]
     private static class PreonAccumulator
     {
-        private static readonly AssetReferenceT<GameObject> _preonProjectile = new(RoR2BepInExPack.GameAssetPaths.Version_1_35_0.RoR2_Base_BFG.BeamSphere_prefab);
+        private static readonly AssetReferenceT<GameObject> _preonProjectile = new(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_BFG.BeamSphere_prefab);
 
         [MonoDetourHookInitialize]
         private static void Setup()
@@ -224,7 +224,7 @@ internal static class NormalEquipments
             ILHelpers.BlastAttacks.OverrideBlastAttackDamageSource(DamageSource.Equipment, info);
         }
     }
-
+ 
 
 
     [MonoDetourTargets(typeof(EquipmentSlot))]
@@ -233,7 +233,7 @@ internal static class NormalEquipments
         [MonoDetourHookInitialize]
         private static void Setup()
         {
-            Mdh.RoR2.EquipmentSlot._FireSaw_g__FireSingleSaw_96_0.ILHook(EquipmentSlot__FireSaw_g__FireSingleSaw_96_0);
+            Mdh.RoR2.EquipmentSlot._FireSaw_g__FireSingleSaw_107_0.ILHook(EquipmentSlot__FireSaw_g__FireSingleSaw_96_0);
         }
 
         private static void EquipmentSlot__FireSaw_g__FireSingleSaw_96_0(ILManipulationInfo info)
